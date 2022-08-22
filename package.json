@@ -1,6 +1,6 @@
 {
   "name": "@franzzemen/re-rule-set",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -36,7 +36,7 @@
     "@franzzemen/re-data-type": "0.0.27",
     "@franzzemen/re-expression": "0.0.16",
     "@franzzemen/re-logical-condition": "0.0.10",
-    "@franzzemen/re-rule": "0.0.6",
+    "@franzzemen/re-rule": "0.0.8",
     "fastest-validator": "^1.13.0",
     "moment": "^2.29.4",
     "object-path": "^0.11.8",
