@@ -1,11 +1,11 @@
 import {ExecutionContextI, Hints, LoggerAdapter} from '@franzzemen/app-utility';
-import {Scope} from '@franzzemen/re-common';
+import {ParserMessages, Scope} from '@franzzemen/re-common';
 import {RuleContainerParser, RuleParser, RuleReference} from '@franzzemen/re-rule';
 import {RuleSet} from '../rule-set';
-import {RuleSetReference} from '../rule-set-reference';
-import {RuleSetOptions} from '../scope/rule-set-options';
-import {RuleSetScope} from '../scope/rule-set-scope';
-import {RuleSetHintKey} from '../util/rule-set-hint-key';
+import {RuleSetReference} from '../rule-set-reference.js';
+import {RuleSetOptions} from '../scope/rule-set-options.js';
+import {RuleSetScope} from '../scope/rule-set-scope.js';
+import {RuleSetHintKey} from '../util/rule-set-hint-key.js';
 
 export class RuleSetParser extends RuleContainerParser<RuleSetReference> {
 
@@ -13,15 +13,11 @@ export class RuleSetParser extends RuleContainerParser<RuleSetReference> {
     super(RuleSetHintKey.RuleSet, [RuleSetHintKey.RulesEngine, RuleSetHintKey.Application]);
   }
 
-  protected createScope(options?: RuleSetOptions, parentScope?: Scope, ec?: ExecutionContextI): Scope {
-    return new RuleSetScope(options, parentScope, ec);
-  }
-
   protected createReference(refName: string, options: RuleSetOptions): RuleSetReference {
     return {refName, options, rules: []};
   }
 
-  protected delegateParsing(ruleSetRef: RuleSetReference, near: string, scope: RuleSetScope, ec?: ExecutionContextI): string {
+  protected delegateParsing(ruleSetRef: RuleSetReference, near: string, scope: RuleSetScope, ec?: ExecutionContextI): [string, ParserMessages] {
     const log = new LoggerAdapter(ec, 'rules-engine', 'rule-set-parser', 'delegateParsing');
     let remaining = near;
 
@@ -43,6 +39,10 @@ export class RuleSetParser extends RuleContainerParser<RuleSetReference> {
         break;
       }
     }
-    return remaining;
+    return [remaining, undefined];
+  }
+
+  protected createScope(options: RuleSetOptions | undefined, parentScope: Scope | undefined, ec: ExecutionContextI | undefined): RuleSetScope {
+    return new RuleSetScope(options, parentScope, ec);
   }
 }

@@ -1,8 +1,9 @@
 {
   "name": "@franzzemen/re-rule-set",
-  "version": "0.0.11",
+  "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,29 +18,30 @@
   },
   "homepage": "https://github.com/FranzZemen/re-rule-set#readme",
   "devDependencies": {
-    "@franzzemen/gulp-base": "^7.5.5",
-    "@franzzemen/npmu": "^1.2.11",
+    "@franzzemen/gulp-base": "^10.1.10",
+    "@franzzemen/npmu": "^2.0.4",
     "@franzzemen/safe-config": "^2.0.45",
     "@types/chai": "^4.3.3",
-    "@types/mocha": "^9.1.1",
+    "@types/mocha": "^10.0.0",
     "@types/object-path": "^0.11.1",
     "@types/uuid": "^8.3.4",
     "chai": "^4.3.6",
     "gulp": "^4.0.2",
     "gulp-mocha": "^8.0.0",
     "mocha": "^10.0.0",
-    "typescript": "^4.8.2"
+    "typescript": "^4.8.4"
   },
   "dependencies": {
-    "@franzzemen/re-common": "0.0.49",
-    "@franzzemen/re-condition": "0.0.15",
-    "@franzzemen/re-data-type": "0.0.28",
-    "@franzzemen/re-expression": "0.0.17",
-    "@franzzemen/re-logical-condition": "0.0.12",
-    "@franzzemen/re-rule": "0.0.10",
-    "fastest-validator": "^1.13.0",
+    "@franzzemen/app-utility": "^5.0.17",
+    "@franzzemen/re-common": "7.0.22",
+    "@franzzemen/re-condition": "0.0.22",
+    "@franzzemen/re-data-type": "4.0.22",
+    "@franzzemen/re-expression": "3.0.1",
+    "@franzzemen/re-logical-condition": "0.0.20",
+    "@franzzemen/re-rule": "1.0.0",
+    "fastest-validator": "^1.15.0",
     "moment": "^2.29.4",
     "object-path": "^0.11.8",
-    "uuid": "^8.3.2"
+    "uuid": "^9.0.0"
   }
 }

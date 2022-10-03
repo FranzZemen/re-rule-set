@@ -1,1 +1,1 @@
-export * from './rule-set-parser';
+export * from './rule-set-parser.js';

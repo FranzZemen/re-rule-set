@@ -1,2 +1,2 @@
-export * from './rule-set-options';
-export * from './rule-set-scope';
+export * from './rule-set-options.js';
+export * from './rule-set-scope.js';

@@ -1,10 +1,10 @@
 import {ExecutionContextI} from '@franzzemen/app-utility';
 import {RuleStringifier} from '@franzzemen/re-rule';
 
-import {RuleSetReference} from '../rule-set-reference';
-import {RuleSetScope} from '../scope/rule-set-scope';
-import {RuleSetHintKey} from '../util/rule-set-hint-key';
-import {StringifyRuleSetOptions} from './stringify-rule-set-options';
+import {RuleSetReference} from '../rule-set-reference.js';
+import {RuleSetScope} from '../scope/rule-set-scope.js';
+import {RuleSetHintKey} from '../util/rule-set-hint-key.js';
+import {StringifyRuleSetOptions} from './stringify-rule-set-options.js';
 
 export class RuleSetStringifier {
   constructor() {
