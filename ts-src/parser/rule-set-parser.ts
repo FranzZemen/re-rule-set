@@ -1,7 +1,6 @@
 import {ExecutionContextI, Hints, LoggerAdapter} from '@franzzemen/app-utility';
 import {ParserMessages, Scope} from '@franzzemen/re-common';
 import {RuleContainerParser, RuleParser, RuleReference} from '@franzzemen/re-rule';
-import {RuleSet} from '../rule-set';
 import {RuleSetReference} from '../rule-set-reference.js';
 import {RuleSetOptions} from '../scope/rule-set-options.js';
 import {RuleSetScope} from '../scope/rule-set-scope.js';

@@ -1,6 +1,6 @@
 import {ExecutionContextI, LoggerAdapter} from '@franzzemen/app-utility';
 import {RuleElementFactory, RuleElementReference, Scope} from '@franzzemen/re-common';
-import {isRule, Rule, RuleOptions, RuleReference, RuleResult} from '@franzzemen/re-rule';
+import {isRule, Rule, RuleOptions, RuleReference, RuleResult, RuleScope} from '@franzzemen/re-rule';
 import {isPromise} from 'node:util/types';
 import {RuleSetParser} from './parser/rule-set-parser.js';
 import {RuleSetReference} from './rule-set-reference.js';
@@ -25,19 +25,16 @@ export class RuleSet extends RuleElementFactory<Rule> {
   scope: RuleSetScope;
   options: RuleSetOptions;
 
-  constructor(ref: RuleSetReference, options?: RuleSetOptions, parentScope?: Scope, ec?: ExecutionContextI) {
+  constructor(ref: RuleSetReference, thisScope: RuleSetScope, ec?: ExecutionContextI) {
     super();
     this.refName = ref.refName;
-    // TODO: Deep copy
-    // TODO: Merge instead?
-    if(options) {
-      this.options = options;
-    } else {
-      this.options = ref.options;
-    }
-    this.scope = new RuleSetScope(this.options, parentScope, ec);
+    this.scope = thisScope;
+
     ref.rules.forEach(ruleRef => {
-      this.addRule(ruleRef, ec);
+      const ruleScope: RuleScope = new RuleScope(thisScope.options);
+      ruleScope.addParent(this.scope);
+      const rule = new Rule(ruleRef, ruleScope, ec);
+      this.addRule(rule, ec);
     });
   }
 
@@ -89,17 +86,11 @@ export class RuleSet extends RuleElementFactory<Rule> {
     return super.hasRegistered(refName, execContext);
   }
 
-  addRule(rule: Rule | RuleReference, options?: RuleOptions, ec?: ExecutionContextI) {
+  addRule(rule: Rule, ec?: ExecutionContextI) {
     if (this.repo.has(rule.refName)) {
       throw new Error(`Not adding Rule Set to Rules Engine for duplicate refName ${rule.refName}`);
     }
-    let theRule: Rule;
-    if (isRule(rule)) {
-      theRule = rule;
-    } else {
-      theRule = new Rule(rule, options, this.scope, ec);
-    }
-    super.register({instanceRef:{refName: theRule.refName, instance: theRule}}, ec);
+    super.register({instanceRef:{refName: rule.refName, instance: rule}}, ec);
   }
 
   getRule(refName: string, execContext?: ExecutionContextI): Rule {
@@ -116,7 +107,7 @@ export class RuleSet extends RuleElementFactory<Rule> {
 
 
   awaitEvaluation(dataDomain: any, ec?: ExecutionContextI): RuleSetResult | Promise<RuleSetResult> {
-    const log = new LoggerAdapter(ec, 'rules-engine', 'rule-set', 'validate');
+    const log = new LoggerAdapter(ec, 're-rule-set', 'rule-set', 'awaitEvaluation');
     const ruleResults: RuleResult [] = [];
     const ruleResultPromises: Promise<RuleResult>[] = [];
     let hasPromises = false;
@@ -157,32 +148,13 @@ export class RuleSet extends RuleElementFactory<Rule> {
     }
   }
 
-  static awaitRuleSetExecution(dataDomain: any, ruleSet: string | RuleSetReference | RuleSet, options?: RuleOptions, parentScope?: Scope, ec?: ExecutionContextI): RuleSetResult | Promise<RuleSetResult> {
+  static awaitExecution(dataDomain: any, text: string, options?: RuleSetOptions, ec?: ExecutionContextI): RuleSetResult | Promise<RuleSetResult> {
     let theRuleSet: RuleSet;
-    if(typeof ruleSet === 'string') {
-      const parser = new RuleSetParser();
-      let [remaining, ref] = parser.parse(ruleSet, parentScope, ec);
-      theRuleSet = new RuleSet(ref, options, parentScope, ec);
-    } else if(isRuleSet(ruleSet)) {
-      theRuleSet = ruleSet;
-    } else {
-      theRuleSet = new RuleSet(ruleSet, options, parentScope, ec);
-    }
+    const parser = new RuleSetParser();
+
+    let [remaining, ref, ruleSetScope, parserMessages] = parser.parse(text, undefined, ec);
+    theRuleSet = new RuleSet(ref, ruleSetScope, ec);
     return theRuleSet.awaitEvaluation(dataDomain, ec);
-  }
-
-
-
-  awaitRuleExecution(dataDomain: any, ruleName: string, ec?: ExecutionContextI): RuleResult | Promise<RuleResult> {
-    const rule = this.getRule(ruleName, ec);
-    if(rule) {
-      return rule.awaitEvaluation(dataDomain, ec);
-    } else {
-      const log = new LoggerAdapter(ec, 'rules-engine', 'rule-set', 'awaitRuleExecution');
-      const err = new Error(`Rule for rule name "${ruleName}" not found`);
-      log.error(err);
-      throw(err);
-    }
   }
 
 }
