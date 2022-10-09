@@ -31,8 +31,7 @@ export class RuleSet extends RuleElementFactory<Rule> {
     this.scope = thisScope;
 
     ref.rules.forEach(ruleRef => {
-      const ruleScope: RuleScope = new RuleScope(thisScope.options);
-      ruleScope.addParent(this.scope);
+      const ruleScope: RuleScope = new RuleScope(thisScope.options, this.scope, ec);
       const rule = new Rule(ruleRef, ruleScope, ec);
       this.addRule(rule, ec);
     });
@@ -151,7 +150,6 @@ export class RuleSet extends RuleElementFactory<Rule> {
   static awaitExecution(dataDomain: any, text: string, options?: RuleSetOptions, ec?: ExecutionContextI): RuleSetResult | Promise<RuleSetResult> {
     let theRuleSet: RuleSet;
     const parser = new RuleSetParser();
-
     let [remaining, ref, ruleSetScope, parserMessages] = parser.parse(text, undefined, ec);
     theRuleSet = new RuleSet(ref, ruleSetScope, ec);
     return theRuleSet.awaitEvaluation(dataDomain, ec);
