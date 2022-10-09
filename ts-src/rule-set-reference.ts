@@ -1,5 +1,5 @@
 import {NamedReference} from '@franzzemen/re-common';
-import {RuleReference} from '@franzzemen/re-rule';
+import {RuleReference, ScopedEntity} from '@franzzemen/re-rule';
 import {RuleSet} from './rule-set';
 import {RuleSetOptions} from './scope/rule-set-options';
 
@@ -9,7 +9,7 @@ export function isRuleSetReference(ref: RuleSet | RuleSetReference): ref is Rule
   return 'refName' in ref && 'options' in ref && !('addRule' in ref);
 }
 
-export interface RuleSetReference extends NamedReference {
+export interface RuleSetReference extends ScopedEntity {
   options: RuleSetOptions;
   rules: RuleReference [];
 }

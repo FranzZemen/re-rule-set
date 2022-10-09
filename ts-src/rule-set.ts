@@ -1,10 +1,18 @@
 import {ExecutionContextI, LoggerAdapter} from '@franzzemen/app-utility';
+import {logErrorAndThrow} from '@franzzemen/app-utility/enhanced-error.js';
 import {RuleElementFactory, RuleElementReference} from '@franzzemen/re-common';
-import {isRule, Rule, RuleResult, RuleScope} from '@franzzemen/re-rule';
+import {
+  isRule,
+  Rule,
+  RuleOptionOverrides,
+  RuleOptions,
+  RuleResult,
+  RuleScope
+} from '@franzzemen/re-rule';
 import {isPromise} from 'node:util/types';
 import {RuleSetParser} from './parser/rule-set-parser.js';
 import {RuleSetReference} from './rule-set-reference.js';
-import {RuleSetOptions} from './scope/rule-set-options.js';
+import {_mergeRuleSetOptions, RuleSetOptions} from './scope/rule-set-options.js';
 import {RuleSetScope} from './scope/rule-set-scope.js';
 
 
@@ -25,14 +33,32 @@ export class RuleSet extends RuleElementFactory<Rule> {
   scope: RuleSetScope;
   options: RuleSetOptions;
 
-  constructor(ref: RuleSetReference, thisScope: RuleSetScope, ec?: ExecutionContextI) {
+  constructor(ref: RuleSetReference, thisScope?: RuleSetScope, ec?: ExecutionContextI) {
     super();
     this.refName = ref.refName;
-    this.scope = thisScope;
-
+    // Which scope?
+    this.scope = ref.loadedScope ? ref.loadedScope : thisScope ? thisScope : undefined;
+    if(!this.scope) {
+      logErrorAndThrow(`Scope not provided for refName ${ref.refName}`, new LoggerAdapter(ec, 're-rule-set', 'rule-set', 'constructor'), ec);
+    }
     ref.rules.forEach(ruleRef => {
-      const ruleScope: RuleScope = new RuleScope(thisScope.options, this.scope, ec);
-      const rule = new Rule(ruleRef, ruleScope, ec);
+      // ref may have a loaded scope - if it does it overrides everything as all scope merging should happen during load or parsing
+      let rule: Rule;
+      if(!ref.loadedScope) {
+        let ruleOptions: RuleOptions = this.options;
+        // Need to create ruleScope from options and overrides
+        const ruleOptionOverrides:RuleOptionOverrides[] = this.options.ruleOptionOverrides;
+        const override: RuleOptions = ruleOptionOverrides.find(item => item.refName === ruleRef.refName)?.options;
+        if(override) {
+          ruleOptions = _mergeRuleSetOptions(this.options, override, false);
+        } else {
+          ruleOptions = this.options;
+        }
+        const ruleScope = new RuleScope(ruleOptions, this.scope, ec);
+        rule = new Rule(ruleRef, ruleScope, ec);
+      } else {
+        rule = new Rule(ruleRef, undefined, ec);
+      }
       this.addRule(rule, ec);
     });
   }
@@ -154,20 +180,21 @@ export class RuleSet extends RuleElementFactory<Rule> {
    *
    * @param dataDomain
    * @param text The ruleset text.  If options are needed they should be provided in the hints for ruleset or rules
+   * @param options
    * @param ec
    */
-  static awaitExecution(dataDomain: any, text: string, ec?: ExecutionContextI): RuleSetResult | Promise<RuleSetResult> {
+  static awaitExecution(dataDomain: any, text: string, options?: RuleSetOptions, ec?: ExecutionContextI): RuleSetResult | Promise<RuleSetResult> {
     const parser = new RuleSetParser();
-    let [remaining, ref, ruleSetScope, parserMessages] = parser.parse(text, undefined, ec);
-    let trueOrPromise = RuleSetScope.resolve(ruleSetScope, ec);
+    let [remaining, ref, parserMessages] = parser.parse(text, {options, mergeFunction: _mergeRuleSetOptions}, undefined, ec);
+    let trueOrPromise = RuleSetScope.resolve(ref.loadedScope, ec);
     if(isPromise(trueOrPromise)) {
       return trueOrPromise
         .then(trueVale => {
-          const ruleSet = new RuleSet(ref, ruleSetScope, ec);
+          const ruleSet = new RuleSet(ref, undefined, ec);
           return ruleSet.awaitEvaluation(dataDomain,ec);
         })
     } else {
-      const ruleSet = new RuleSet(ref, ruleSetScope, ec);
+      const ruleSet = new RuleSet(ref, undefined, ec);
       return ruleSet.awaitEvaluation(dataDomain,ec);
     }
   }
