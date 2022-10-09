@@ -1,6 +1,6 @@
 import {ExecutionContextI, LoggerAdapter} from '@franzzemen/app-utility';
-import {RuleElementFactory, RuleElementReference, Scope} from '@franzzemen/re-common';
-import {isRule, Rule, RuleOptions, RuleReference, RuleResult, RuleScope} from '@franzzemen/re-rule';
+import {RuleElementFactory, RuleElementReference} from '@franzzemen/re-common';
+import {isRule, Rule, RuleResult, RuleScope} from '@franzzemen/re-rule';
 import {isPromise} from 'node:util/types';
 import {RuleSetParser} from './parser/rule-set-parser.js';
 import {RuleSetReference} from './rule-set-reference.js';
@@ -89,6 +89,7 @@ export class RuleSet extends RuleElementFactory<Rule> {
     if (this.repo.has(rule.refName)) {
       throw new Error(`Not adding Rule Set to Rules Engine for duplicate refName ${rule.refName}`);
     }
+    rule.scope.reParent(this.scope, ec);
     super.register({instanceRef:{refName: rule.refName, instance: rule}}, ec);
   }
 
@@ -96,8 +97,10 @@ export class RuleSet extends RuleElementFactory<Rule> {
     return super.getRegistered(refName, execContext);
   }
 
-  removeRule(refName: string, execContext?: ExecutionContextI) {
-    return super.unregister(refName, execContext);
+  removeRule(refName: string, ec?: ExecutionContextI) {
+    const rule: Rule = super.getRegistered(refName, ec);
+    rule.scope.removeParent(ec);
+    return super.unregister(refName, ec);
   }
 
   getRules(): Rule[] {
@@ -147,12 +150,25 @@ export class RuleSet extends RuleElementFactory<Rule> {
     }
   }
 
-  static awaitExecution(dataDomain: any, text: string, options?: RuleSetOptions, ec?: ExecutionContextI): RuleSetResult | Promise<RuleSetResult> {
-    let theRuleSet: RuleSet;
+  /**
+   *
+   * @param dataDomain
+   * @param text The ruleset text.  If options are needed they should be provided in the hints for ruleset or rules
+   * @param ec
+   */
+  static awaitExecution(dataDomain: any, text: string, ec?: ExecutionContextI): RuleSetResult | Promise<RuleSetResult> {
     const parser = new RuleSetParser();
     let [remaining, ref, ruleSetScope, parserMessages] = parser.parse(text, undefined, ec);
-    theRuleSet = new RuleSet(ref, ruleSetScope, ec);
-    return theRuleSet.awaitEvaluation(dataDomain, ec);
+    let trueOrPromise = RuleSetScope.resolve(ruleSetScope, ec);
+    if(isPromise(trueOrPromise)) {
+      return trueOrPromise
+        .then(trueVale => {
+          const ruleSet = new RuleSet(ref, ruleSetScope, ec);
+          return ruleSet.awaitEvaluation(dataDomain,ec);
+        })
+    } else {
+      const ruleSet = new RuleSet(ref, ruleSetScope, ec);
+      return ruleSet.awaitEvaluation(dataDomain,ec);
+    }
   }
-
 }
