@@ -46,7 +46,7 @@ export class RuleSet extends RuleElementFactory<Rule> {
       let rule: Rule;
       if(!ref.loadedScope) {
         let ruleOptions: RuleOptions = _mergeRuleOptions({}, this.scope.options, true);
-        let ruleSetOptions: RuleSetOptions = this.scope.options as RuleSetOptions;
+        let ruleSetOptions: RuleSetOptions = this.scope.options;
         // Need to create ruleScope from options and overrides
         const ruleOptionOverrides:RuleOptionOverrides[] = ruleSetOptions.ruleOptionOverrides;
         const override: RuleOptions = ruleOptionOverrides.find(item => item.refName === ruleRef.refName)?.options;
