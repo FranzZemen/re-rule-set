@@ -2,6 +2,7 @@ import {ExecutionContextI, LoggerAdapter} from '@franzzemen/app-utility';
 import {logErrorAndThrow} from '@franzzemen/app-utility/enhanced-error.js';
 import {RuleElementFactory, RuleElementReference} from '@franzzemen/re-common';
 import {
+  _mergeRuleOptions,
   isRule,
   Rule,
   RuleOptionOverrides,
@@ -31,7 +32,6 @@ export function isRuleSet(ruleSet: RuleSetReference | RuleSet): ruleSet is RuleS
 export class RuleSet extends RuleElementFactory<Rule> {
   refName: string;
   scope: RuleSetScope;
-  options: RuleSetOptions;
 
   constructor(ref: RuleSetReference, thisScope?: RuleSetScope, ec?: ExecutionContextI) {
     super();
@@ -45,14 +45,13 @@ export class RuleSet extends RuleElementFactory<Rule> {
       // ref may have a loaded scope - if it does it overrides everything as all scope merging should happen during load or parsing
       let rule: Rule;
       if(!ref.loadedScope) {
-        let ruleOptions: RuleOptions = this.options;
+        let ruleOptions: RuleOptions = _mergeRuleOptions({}, this.scope.options, true);
+        let ruleSetOptions: RuleSetOptions = this.scope.options as RuleSetOptions;
         // Need to create ruleScope from options and overrides
-        const ruleOptionOverrides:RuleOptionOverrides[] = this.options.ruleOptionOverrides;
+        const ruleOptionOverrides:RuleOptionOverrides[] = ruleSetOptions.ruleOptionOverrides;
         const override: RuleOptions = ruleOptionOverrides.find(item => item.refName === ruleRef.refName)?.options;
         if(override) {
-          ruleOptions = _mergeRuleSetOptions(this.options, override, false);
-        } else {
-          ruleOptions = this.options;
+          ruleOptions = _mergeRuleSetOptions(ruleOptions, override, true);
         }
         const ruleScope = new RuleScope(ruleOptions, this.scope, ec);
         rule = new Rule(ruleRef, ruleScope, ec);
