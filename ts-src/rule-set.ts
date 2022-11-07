@@ -3,7 +3,7 @@ import {logErrorAndThrow} from '@franzzemen/enhanced-error';
 import {LogExecutionContext, LoggerAdapter} from '@franzzemen/logger-adapter';
 import {RuleElementFactory, RuleElementReference} from '@franzzemen/re-common';
 import {
-  isRule,
+  isRule, ReRule,
   Rule,
   RuleOptionOverrides,
   RuleOptions,
@@ -41,19 +41,18 @@ export class RuleSet extends RuleElementFactory<Rule> {
     if(!this.scope) {
       logErrorAndThrow(`Scope not provided for refName ${ref.refName}`, new LoggerAdapter(ec, 're-rule-set', 'rule-set', 'constructor'));
     }
+    const ruleOptionOverrides: RuleOptionOverrides[] = (this.scope.options as ReRuleSet)?.ruleset?.ruleOptionOverrides;
     ref.rules.forEach(ruleRef => {
       // ref may have a loaded scope - if it does it overrides everything as all scope merging should happen during load or parsing
       let rule: Rule;
       if(!ref.loadedScope) {
-        let reRuleSet: ReRuleSet = _.merge({}, this.scope.options);
-        let reRuleSetForOverrides: ReRuleSet = this.scope.options;
+        let reRule: ReRule = _.merge({}, this.scope.options);
         // Need to create ruleScope from options and overrides
-        const ruleOptionOverrides:RuleOptionOverrides[] = reRuleSetForOverrides.ruleset.ruleOptionOverrides;
         const override: RuleOptions = ruleOptionOverrides.find(item => item.refName === ruleRef.refName)?.options;
         if(override) {
-          reRuleSet = _.merge(reRuleSet, override);
+          reRule = _.merge(reRule, override);
         }
-        const ruleScope = new RuleScope(reRuleSet, this.scope, ec);
+        const ruleScope = new RuleScope(reRule, this.scope, ec);
         rule = new Rule(ruleRef, ruleScope, ec);
       } else {
         rule = new Rule(ruleRef, undefined, ec);
