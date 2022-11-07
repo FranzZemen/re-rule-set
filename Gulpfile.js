@@ -13,27 +13,39 @@ export const npmu = (cb) => {
   const __dirname = dirname(fileURLToPath(import.meta.url));
   
   npmuFunc([
-  {
-    path: join(__dirname, '../gulp-base'), packageName: '@franzzemen/gulp-base',
-  }, {
-    path: join(__dirname, '../npmu'), packageName: '@franzzemen/npmu',
-  }, {
-    path: join(__dirname, '../app-utility'), packageName: '@franzzemen/app-utility',
-  }, {
-    path: join(__dirname, '../re-common'), packageName: '@franzzemen/re-common',
-  }, {
-    path: join(__dirname, '../re-data-type'), packageName: '@franzzemen/re-data-type',
-  }, {
-    path: join(__dirname, '../re-expression'), packageName: '@franzzemen/re-expression',
-  }, {
-    path: join(__dirname, '../re-condition'), packageName: '@franzzemen/re-condition',
-  }, {
-    path: join(__dirname, '../re-logical-condition'), packageName: '@franzzemen/re-logical-condition',
-  }, {
-    path: join(__dirname, '../re-rule'), packageName: '@franzzemen/re-rule',
-  }, {
-    path: join(__dirname, './'), packageName: '@franzzemen/re-rule-set',
-  }])
+    {
+      path: join(__dirname, '../gulp-base'), packageName: '@franzzemen/gulp-base'
+    }, {
+      path: join(__dirname, '../npmu'), packageName: '@franzzemen/npmu'
+    }, {
+      path: join(__dirname, '../module-factory'), packageName: '@franzzemen/module-factory'
+    }, {
+      path: join(__dirname, '../execution-context'), packageName: '@franzzemen/execution-context'
+    }, {
+      path: join(__dirname, '../app-execution-context'), packageName: '@franzzemen/app-execution-context'
+    }, {
+      path: join(__dirname, '../logger-adapter'), packageName: '@franzzemen/logger-adapter'
+    }, {
+      path: join(__dirname, '../enhanced-error'), packageName: '@franzzemen/enhanced-error'
+    }, {
+      path: join(__dirname, '../module-resolver'), packageName: '@franzzemen/module-resolver'
+    }, {
+      path: join(__dirname, '../hints'), packageName: '@franzzemen/hints'
+    }, {
+      path: join(__dirname, '../re-common'), packageName: '@franzzemen/re-common'
+    }, {
+      path: join(__dirname, '../re-data-type'), packageName: '@franzzemen/re-data-type'
+    }, {
+      path: join(__dirname, '../re-expression'), packageName: '@franzzemen/re-expression'
+    }, {
+      path: join(__dirname, '../re-condition'), packageName: '@franzzemen/re-condition'
+    }, {
+      path: join(__dirname, '../re-logical-condition'), packageName: '@franzzemen/re-logical-condition'
+    }, {
+      path: join(__dirname, '../re-rule'), packageName: '@franzzemen/re-rule'
+    }, {
+      path: join(__dirname, './'), packageName: '@franzzemen/re-rule-set'
+    }])
     .then(() => {
       console.log('cb...');
       cb();

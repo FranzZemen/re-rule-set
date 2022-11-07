@@ -1,4 +1,4 @@
-import {ExecutionContextI} from '@franzzemen/app-utility';
+import {LogExecutionContext} from '@franzzemen/logger-adapter';
 import {RuleStringifier} from '@franzzemen/re-rule';
 
 import {RuleSetReference} from '../rule-set-reference.js';
@@ -10,7 +10,7 @@ export class RuleSetStringifier {
   constructor() {
   }
 
-  stringify(ruleSetRef: RuleSetReference, scope: RuleSetScope, options?: StringifyRuleSetOptions, ec?: ExecutionContextI) {
+  stringify(ruleSetRef: RuleSetReference, scope: RuleSetScope, options?: StringifyRuleSetOptions, ec?: LogExecutionContext) {
     let stringified: string;
     // TODO stringify options
     if(ruleSetRef.refName.indexOf(' ') < 0) {

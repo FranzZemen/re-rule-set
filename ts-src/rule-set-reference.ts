@@ -1,7 +1,6 @@
-import {NamedReference} from '@franzzemen/re-common';
 import {RuleReference, ScopedReference} from '@franzzemen/re-rule';
 import {RuleSet} from './rule-set';
-import {RuleSetOptions} from './scope/rule-set-options';
+import {ReRuleSet} from './scope/rule-set-execution-context.js';
 
 export const DefaultRuleSetName = 'Default';
 
@@ -10,6 +9,6 @@ export function isRuleSetReference(ref: RuleSet | RuleSetReference): ref is Rule
 }
 
 export interface RuleSetReference extends ScopedReference {
-  options: RuleSetOptions;
+  options: ReRuleSet;
   rules: RuleReference [];
 }

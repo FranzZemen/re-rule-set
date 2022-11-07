@@ -1,7 +1,7 @@
-import {ExecutionContextI, Hints, LoggerAdapter} from '@franzzemen/app-utility';
+import {Hints} from '@franzzemen/hints';
+import {LogExecutionContext, LoggerAdapter} from '@franzzemen/logger-adapter';
 import {ParserMessages, Scope} from '@franzzemen/re-common';
 import {
-  _mergeRuleOptions,
   DelegateOptions,
   RuleContainerParser,
   RuleParser,
@@ -9,7 +9,7 @@ import {
   RuleScope
 } from '@franzzemen/re-rule';
 import {RuleSetReference} from '../rule-set-reference.js';
-import {RuleSetOptions} from '../scope/rule-set-options.js';
+import {ReRuleSet, RuleSetOptions} from '../scope/rule-set-execution-context.js';
 import {RuleSetScope} from '../scope/rule-set-scope.js';
 import {RuleSetHintKey} from '../util/rule-set-hint-key.js';
 
@@ -19,11 +19,11 @@ export class RuleSetParser extends RuleContainerParser<RuleSetReference> {
     super(RuleSetHintKey.RuleSet, [RuleSetHintKey.RulesEngine, RuleSetHintKey.Application]);
   }
 
-  protected createReference(refName: string, options: RuleSetOptions): RuleSetReference {
+  protected createReference(refName: string, options: ReRuleSet): RuleSetReference {
     return {refName, options, rules: []};
   }
 
-  protected delegateParsing(ruleSetRef: RuleSetReference, near: string, scope: RuleSetScope, ec?: ExecutionContextI): [string, ParserMessages] {
+  protected delegateParsing(ruleSetRef: RuleSetReference, near: string, scope: RuleSetScope, ec?: LogExecutionContext): [string, ParserMessages] {
     const log = new LoggerAdapter(ec, 'rules-engine', 'rule-set-parser', 'delegateParsing');
     let remaining = near;
 
@@ -35,7 +35,7 @@ export class RuleSetParser extends RuleContainerParser<RuleSetReference> {
       let delegateOptions: DelegateOptions;
       let overrides = (scope?.options as RuleSetOptions)?.ruleOptionOverrides;
       if(overrides && overrides.length > 0) {
-        delegateOptions = {mergeFunction: _mergeRuleOptions, overrides: overrides}
+        delegateOptions = {overrides: overrides}
       }
       [remaining, ruleRef, parserMessages] = parser.parse(remaining, delegateOptions, scope, ec);
       if(ruleRef) {
@@ -54,7 +54,7 @@ export class RuleSetParser extends RuleContainerParser<RuleSetReference> {
     return [remaining, undefined];
   }
 
-  protected createScope(options: RuleSetOptions | undefined, parentScope: Scope | undefined, ec: ExecutionContextI | undefined): RuleSetScope {
+  protected createScope(options: ReRuleSet | undefined, parentScope: Scope | undefined, ec: LogExecutionContext | undefined): RuleSetScope {
     return new RuleSetScope(options, parentScope, ec);
   }
 }
