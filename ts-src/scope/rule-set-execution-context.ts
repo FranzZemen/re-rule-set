@@ -12,7 +12,7 @@ import {
 import {
   ReRule,
   reRuleSchemaWrapper,
-  RuleExecutionContext,
+  RuleExecutionContext, RuleExecutionContextDefaults,
   RuleOptionOverrides,
   ruleOptionsSchemaWrapper
 } from '@franzzemen/re-rule';
@@ -41,7 +41,7 @@ export class RuleSetExecutionContextDefaults {
     expression: ExpressionExecutionContextDefaults.ExpressionOptions,
     condition: ConditionExecutionContextDefaults.ConditionOptions,
     logicalCondition: LogicalConditionExecutionContextDefaults.LogicalConditionOptions,
-    rule: RuleSetExecutionContextDefaults.RuleSetOptions,
+    rule: RuleExecutionContextDefaults.RuleOptions,
     ruleset: RuleSetExecutionContextDefaults.RuleSetOptions
   };
   static RuleSetExecutionContext: RuleSetExecutionContext = {
