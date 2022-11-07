@@ -26,7 +26,7 @@ export interface RuleSetOptions {
 
 
 export interface ReRuleSet extends ReRule {
-  ruleset?: RuleSetOptions;
+  're-rule-set'?: RuleSetOptions;
 }
 
 export interface RuleSetExecutionContext extends RuleExecutionContext {
@@ -36,13 +36,13 @@ export interface RuleSetExecutionContext extends RuleExecutionContext {
 export class RuleSetExecutionContextDefaults {
   static RuleSetOptions: RuleSetOptions = {};
   static ReRuleSet: ReRuleSet = {
-    common: CommonExecutionContextDefaults.CommonOptions,
-    data: DataTypeExecutionContextDefaults.DataTypeOptions,
-    expression: ExpressionExecutionContextDefaults.ExpressionOptions,
-    condition: ConditionExecutionContextDefaults.ConditionOptions,
-    logicalCondition: LogicalConditionExecutionContextDefaults.LogicalConditionOptions,
-    rule: RuleExecutionContextDefaults.RuleOptions,
-    ruleset: RuleSetExecutionContextDefaults.RuleSetOptions
+    're-common': CommonExecutionContextDefaults.CommonOptions,
+    're-data-type': DataTypeExecutionContextDefaults.DataTypeOptions,
+    're-expression': ExpressionExecutionContextDefaults.ExpressionOptions,
+    're-condition': ConditionExecutionContextDefaults.ConditionOptions,
+    're-logical-condition': LogicalConditionExecutionContextDefaults.LogicalConditionOptions,
+    're-rule': RuleExecutionContextDefaults.RuleOptions,
+    're-rule-set': RuleSetExecutionContextDefaults.RuleSetOptions
   };
   static RuleSetExecutionContext: RuleSetExecutionContext = {
     execution: ExecutionContextDefaults.Execution(),
@@ -74,13 +74,13 @@ export const ruleSetOptionsSchemaWrapper = {
 };
 
 const reRuleSetSchema = {
-  common: commonOptionsSchemaWrapper,
-  data: dataTypeOptionsSchemaWrapper,
-  expression: expressionOptionsSchemaWrapper,
-  condition: conditionOptionsSchemaWrapper,
-  logicalCondition: logicalConditionOptionsSchemaWrapper,
-  rule: ruleOptionsSchemaWrapper,
-  ruleSet: ruleSetOptionsSchemaWrapper
+  're-common': commonOptionsSchemaWrapper,
+  're-data-type': dataTypeOptionsSchemaWrapper,
+  're-expression': expressionOptionsSchemaWrapper,
+  're-condition': conditionOptionsSchemaWrapper,
+  're-logical-condition': logicalConditionOptionsSchemaWrapper,
+  're-rule': ruleOptionsSchemaWrapper,
+  're-rule-set': ruleSetOptionsSchemaWrapper
 };
 
 export const reRuleSetSchemaWrapper = {

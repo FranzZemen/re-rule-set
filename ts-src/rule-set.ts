@@ -41,7 +41,7 @@ export class RuleSet extends RuleElementFactory<Rule> {
     if(!this.scope) {
       logErrorAndThrow(`Scope not provided for refName ${ref.refName}`, new LoggerAdapter(ec, 're-rule-set', 'rule-set', 'constructor'));
     }
-    const ruleOptionOverrides: RuleOptionOverrides[] = (this.scope.options as ReRuleSet)?.ruleset?.ruleOptionOverrides;
+    const ruleOptionOverrides: RuleOptionOverrides[] = (this.scope.options as ReRuleSet)?.['re-rule-set']?.ruleOptionOverrides;
     ref.rules.forEach(ruleRef => {
       // ref may have a loaded scope - if it does it overrides everything as all scope merging should happen during load or parsing
       let rule: Rule;
